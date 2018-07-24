@@ -27,15 +27,16 @@ import (
 
 var _ = Describe("v3-app Command", func() {
 	var (
-		cmd             v3.AppCommand
-		testUI          *ui.UI
-		fakeConfig      *commandfakes.FakeConfig
-		fakeSharedActor *commandfakes.FakeSharedActor
-		fakeActor       *v3fakes.FakeAppActor
-		fakeV2Actor     *sharedfakes.FakeV2AppActor
-		binaryName      string
-		executeErr      error
-		app             string
+		cmd                v3.AppCommand
+		testUI             *ui.UI
+		fakeConfig         *commandfakes.FakeConfig
+		fakeSharedActor    *commandfakes.FakeSharedActor
+		fakeActor          *v3fakes.FakeAppActor
+		fakeV2DisplayActor *sharedfakes.FakeV2AppActor
+		fakeV3DisplayActor *sharedfakes.FakeV3AppSummaryActor
+		binaryName         string
+		executeErr         error
+		app                string
 	)
 
 	BeforeEach(func() {
@@ -43,19 +44,13 @@ var _ = Describe("v3-app Command", func() {
 		fakeConfig = new(commandfakes.FakeConfig)
 		fakeSharedActor = new(commandfakes.FakeSharedActor)
 		fakeActor = new(v3fakes.FakeAppActor)
-		fakeV2Actor = new(sharedfakes.FakeV2AppActor)
 
 		binaryName = "faceman"
 		fakeConfig.BinaryNameReturns(binaryName)
 		app = "some-app"
 
-		appSummaryDisplayer := shared.AppSummaryDisplayer{
-			UI:         testUI,
-			Config:     fakeConfig,
-			Actor:      fakeActor,
-			V2AppActor: fakeV2Actor,
-			AppName:    app,
-		}
+		var appSummaryDisplayer *shared.AppSummaryDisplayer
+		appSummaryDisplayer, fakeV2DisplayActor, fakeV3DisplayActor = NewTestAppSummaryDisplayer(app, testUI, fakeConfig)
 
 		cmd = v3.AppCommand{
 			RequiredArgs: flag.AppName{AppName: app},

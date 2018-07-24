@@ -14,7 +14,6 @@ import (
 //go:generate counterfeiter . AppActor
 
 type AppActor interface {
-	shared.V3AppSummaryActor
 	CloudControllerAPIVersion() string
 	GetApplicationByNameAndSpace(name string, spaceGUID string) (v3action.Application, v3action.Warnings, error)
 }
@@ -29,20 +28,22 @@ type AppCommand struct {
 	Config              command.Config
 	SharedActor         command.SharedActor
 	Actor               AppActor
-	AppSummaryDisplayer shared.AppSummaryDisplayer
+	AppSummaryDisplayer *shared.AppSummaryDisplayer
 }
 
 func (cmd *AppCommand) Setup(config command.Config, ui command.UI) error {
 	cmd.UI = ui
 	cmd.Config = config
-	cmd.SharedActor = sharedaction.NewActor(config)
+	sharedActor := sharedaction.NewActor(config)
+	cmd.SharedActor = sharedActor
 
-	ccClient, _, err := shared.NewClients(config, ui, true, ccversion.MinVersionV3)
+	ccClient, uaaClient, err := shared.NewClients(config, ui, true, ccversion.MinVersionV3)
 	if err != nil {
 		return err
 	}
 
-	cmd.Actor = v3action.NewActor(ccClient, config, nil, nil)
+	v3actor := v3action.NewActor(ccClient, config, sharedActor, uaaClient)
+	cmd.Actor = v3actor
 
 	ccClientV2, uaaClientV2, err := sharedV2.NewClients(config, ui, true)
 	if err != nil {
@@ -51,18 +52,11 @@ func (cmd *AppCommand) Setup(config command.Config, ui command.UI) error {
 
 	v2Actor := v2action.NewActor(ccClientV2, uaaClientV2, config)
 
-	cmd.AppSummaryDisplayer = shared.AppSummaryDisplayer{
-		UI:         cmd.UI,
-		Config:     cmd.Config,
-		Actor:      cmd.Actor,
-		V2AppActor: v2Actor,
-		AppName:    cmd.RequiredArgs.AppName,
-	}
+	cmd.AppSummaryDisplayer = shared.NewAppSummaryDisplayer(cmd.RequiredArgs.AppName, ui, config, v2Actor, v3actor)
 	return nil
 }
 
 func (cmd AppCommand) Execute(args []string) error {
-
 	err := command.MinimumAPIVersionCheck(cmd.Actor.CloudControllerAPIVersion(), ccversion.MinVersionV3)
 	if err != nil {
 		return err

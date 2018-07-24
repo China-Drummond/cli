@@ -13,14 +13,6 @@ import (
 	"code.cloudfoundry.org/cli/command"
 )
 
-type AppSummaryDisplayer struct {
-	UI         command.UI
-	Config     command.Config
-	Actor      V3AppSummaryActor
-	V2AppActor V2AppActor
-	AppName    string
-}
-
 //go:generate counterfeiter . V2AppActor
 
 type V2AppActor interface {
@@ -32,6 +24,24 @@ type V2AppActor interface {
 
 type V3AppSummaryActor interface {
 	GetApplicationSummaryByNameAndSpace(appName string, spaceGUID string) (v3action.ApplicationSummary, v3action.Warnings, error)
+}
+
+type AppSummaryDisplayer struct {
+	Actor      V3AppSummaryActor
+	AppName    string
+	Config     command.Config
+	UI         command.UI
+	V2AppActor V2AppActor
+}
+
+func NewAppSummaryDisplayer(appName string, ui command.UI, config command.Config, v2Actor V2AppActor, actor V3AppSummaryActor) *AppSummaryDisplayer {
+	return &AppSummaryDisplayer{
+		Actor:      actor,
+		AppName:    appName,
+		Config:     config,
+		UI:         ui,
+		V2AppActor: v2Actor,
+	}
 }
 
 func (display AppSummaryDisplayer) DisplayAppInfo() error {
