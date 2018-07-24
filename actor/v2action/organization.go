@@ -49,7 +49,8 @@ func (actor Actor) GetOrganizationByName(orgName string) (Organization, Warnings
 
 // GrantOrgManagerByUsername gives the Org Manager role to the provided user.
 func (actor Actor) GrantOrgManagerByUsername(guid string, username string) (Warnings, error) {
-	return Warnings{}, nil
+	warnings, err := actor.CloudControllerClient.UpdateOrganizationManagerByUsername(guid, username)
+	return Warnings(warnings), err
 }
 
 // CreateOrganization creates an Organization based on the provided orgName.

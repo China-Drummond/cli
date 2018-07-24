@@ -157,3 +157,32 @@ func (client *Client) GetOrganizations(filters ...Filter) ([]Organization, Warni
 
 	return fullOrgsList, warnings, err
 }
+
+type updateOrgManagerByUsernameRequestBody struct {
+	Username string `json:"username"`
+}
+
+func (client *Client) UpdateOrganizationManagerByUsername(guid string, username string) (Warnings, error) {
+	requestBody := updateOrgManagerByUsernameRequestBody{
+		Username: username,
+	}
+
+	body, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	request, err := client.newHTTPRequest(requestOptions{
+		RequestName: internal.PutOrganizationManagerRequest,
+		Body:        bytes.NewReader(body),
+		URIParams:   Params{"organization_guid": guid},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	response := cloudcontroller.Response{}
+	err = client.connection.Make(request, &response)
+
+	return response.Warnings, err
+}

@@ -68,6 +68,7 @@ type CloudControllerClient interface {
 	RestageApplication(app ccv2.Application) (ccv2.Application, ccv2.Warnings, error)
 	TargetCF(settings ccv2.TargetSettings) (ccv2.Warnings, error)
 	UpdateApplication(app ccv2.Application) (ccv2.Application, ccv2.Warnings, error)
+	UpdateOrganizationManagerByUsername(guid string, username string) (ccv2.Warnings, error)
 	UpdateResourceMatch(resourcesToMatch []ccv2.Resource) ([]ccv2.Resource, ccv2.Warnings, error)
 	UpdateRouteApplication(routeGUID string, appGUID string) (ccv2.Route, ccv2.Warnings, error)
 	UpdateSecurityGroupSpace(securityGroupGUID string, spaceGUID string) (ccv2.Warnings, error)

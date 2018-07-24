@@ -883,6 +883,20 @@ type FakeCloudControllerClient struct {
 		result2 ccv2.Warnings
 		result3 error
 	}
+	UpdateOrganizationManagerByUsernameStub        func(guid string, username string) (ccv2.Warnings, error)
+	updateOrganizationManagerByUsernameMutex       sync.RWMutex
+	updateOrganizationManagerByUsernameArgsForCall []struct {
+		guid     string
+		username string
+	}
+	updateOrganizationManagerByUsernameReturns struct {
+		result1 ccv2.Warnings
+		result2 error
+	}
+	updateOrganizationManagerByUsernameReturnsOnCall map[int]struct {
+		result1 ccv2.Warnings
+		result2 error
+	}
 	UpdateResourceMatchStub        func(resourcesToMatch []ccv2.Resource) ([]ccv2.Resource, ccv2.Warnings, error)
 	updateResourceMatchMutex       sync.RWMutex
 	updateResourceMatchArgsForCall []struct {
@@ -4183,6 +4197,58 @@ func (fake *FakeCloudControllerClient) UpdateApplicationReturnsOnCall(i int, res
 	}{result1, result2, result3}
 }
 
+func (fake *FakeCloudControllerClient) UpdateOrganizationManagerByUsername(guid string, username string) (ccv2.Warnings, error) {
+	fake.updateOrganizationManagerByUsernameMutex.Lock()
+	ret, specificReturn := fake.updateOrganizationManagerByUsernameReturnsOnCall[len(fake.updateOrganizationManagerByUsernameArgsForCall)]
+	fake.updateOrganizationManagerByUsernameArgsForCall = append(fake.updateOrganizationManagerByUsernameArgsForCall, struct {
+		guid     string
+		username string
+	}{guid, username})
+	fake.recordInvocation("UpdateOrganizationManagerByUsername", []interface{}{guid, username})
+	fake.updateOrganizationManagerByUsernameMutex.Unlock()
+	if fake.UpdateOrganizationManagerByUsernameStub != nil {
+		return fake.UpdateOrganizationManagerByUsernameStub(guid, username)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fake.updateOrganizationManagerByUsernameReturns.result1, fake.updateOrganizationManagerByUsernameReturns.result2
+}
+
+func (fake *FakeCloudControllerClient) UpdateOrganizationManagerByUsernameCallCount() int {
+	fake.updateOrganizationManagerByUsernameMutex.RLock()
+	defer fake.updateOrganizationManagerByUsernameMutex.RUnlock()
+	return len(fake.updateOrganizationManagerByUsernameArgsForCall)
+}
+
+func (fake *FakeCloudControllerClient) UpdateOrganizationManagerByUsernameArgsForCall(i int) (string, string) {
+	fake.updateOrganizationManagerByUsernameMutex.RLock()
+	defer fake.updateOrganizationManagerByUsernameMutex.RUnlock()
+	return fake.updateOrganizationManagerByUsernameArgsForCall[i].guid, fake.updateOrganizationManagerByUsernameArgsForCall[i].username
+}
+
+func (fake *FakeCloudControllerClient) UpdateOrganizationManagerByUsernameReturns(result1 ccv2.Warnings, result2 error) {
+	fake.UpdateOrganizationManagerByUsernameStub = nil
+	fake.updateOrganizationManagerByUsernameReturns = struct {
+		result1 ccv2.Warnings
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeCloudControllerClient) UpdateOrganizationManagerByUsernameReturnsOnCall(i int, result1 ccv2.Warnings, result2 error) {
+	fake.UpdateOrganizationManagerByUsernameStub = nil
+	if fake.updateOrganizationManagerByUsernameReturnsOnCall == nil {
+		fake.updateOrganizationManagerByUsernameReturnsOnCall = make(map[int]struct {
+			result1 ccv2.Warnings
+			result2 error
+		})
+	}
+	fake.updateOrganizationManagerByUsernameReturnsOnCall[i] = struct {
+		result1 ccv2.Warnings
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakeCloudControllerClient) UpdateResourceMatch(resourcesToMatch []ccv2.Resource) ([]ccv2.Resource, ccv2.Warnings, error) {
 	var resourcesToMatchCopy []ccv2.Resource
 	if resourcesToMatch != nil {
@@ -4972,6 +5038,8 @@ func (fake *FakeCloudControllerClient) Invocations() map[string][][]interface{} 
 	defer fake.targetCFMutex.RUnlock()
 	fake.updateApplicationMutex.RLock()
 	defer fake.updateApplicationMutex.RUnlock()
+	fake.updateOrganizationManagerByUsernameMutex.RLock()
+	defer fake.updateOrganizationManagerByUsernameMutex.RUnlock()
 	fake.updateResourceMatchMutex.RLock()
 	defer fake.updateResourceMatchMutex.RUnlock()
 	fake.updateRouteApplicationMutex.RLock()

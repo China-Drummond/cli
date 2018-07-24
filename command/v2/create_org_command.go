@@ -82,7 +82,10 @@ func (cmd CreateOrgCommand) Execute(args []string) error {
 			"OrgName":  orgName,
 			"Username": user.Name,
 		})
-	warnings, _ = cmd.Actor.GrantOrgManagerByUsername(org.GUID, user.Name)
+	warnings, err = cmd.Actor.GrantOrgManagerByUsername(org.GUID, user.Name)
+	if err != nil {
+		return err
+	}
 	cmd.UI.DisplayWarnings(warnings)
 
 	cmd.UI.DisplayOK()

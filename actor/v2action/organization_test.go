@@ -186,6 +186,54 @@ var _ = Describe("Org Actions", func() {
 		})
 	})
 
+	Describe("GrantOrgManagerByUsername", func() {
+		var (
+			guid     string
+			username string
+			warnings Warnings
+			err      error
+		)
+		JustBeforeEach(func() {
+			warnings, err = actor.GrantOrgManagerByUsername(guid, username)
+		})
+
+		Context("when making the user an org manager succeeds", func() {
+			BeforeEach(func() {
+				guid = "some-guid"
+				username = "some-user"
+
+				fakeCloudControllerClient.UpdateOrganizationManagerByUsernameReturns(
+					ccv2.Warnings{"warning-1", "warning-2"},
+					nil,
+				)
+			})
+
+			It("returns warnings", func() {
+				Expect(err).ToNot(HaveOccurred())
+				Expect(fakeCloudControllerClient.UpdateOrganizationManagerByUsernameCallCount()).To(Equal(1))
+				orgGuid, user := fakeCloudControllerClient.UpdateOrganizationManagerByUsernameArgsForCall(0)
+				Expect(orgGuid).To(Equal("some-guid"))
+				Expect(user).To(Equal("some-user"))
+				Expect(warnings).To(ConsistOf("warning-1", "warning-2"))
+			})
+		})
+
+		Context("when making the user an org manager fails", func() {
+			BeforeEach(func() {
+				fakeCloudControllerClient.UpdateOrganizationManagerByUsernameReturns(
+					ccv2.Warnings{"warning-1", "warning-2"},
+					errors.New("some-error"),
+				)
+			})
+
+			It("returns the error and all warnings", func() {
+				Expect(err).To(HaveOccurred())
+				Expect(warnings).To(ConsistOf("warning-1", "warning-2"))
+				Expect(err).To(MatchError("some-error"))
+			})
+		})
+	})
+
 	Describe("CreateOrganization", func() {
 		var (
 			org      Organization

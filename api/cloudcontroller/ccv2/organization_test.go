@@ -188,6 +188,47 @@ var _ = Describe("Organization", func() {
 		})
 	})
 
+	Describe("UpdateOrganizationManagerByUsername", func() {
+		Context("when the organization exists", func() {
+			var (
+				warnings Warnings
+				err      error
+			)
+
+			BeforeEach(func() {
+				expectedRequest := `{
+					"username": "some-user"
+				}`
+
+				response := `{
+					"metadata": {
+						"guid": "some-org-guid"
+					},
+					"entity": {
+						"name": "some-org",
+						"quota_definition_guid": "some-quota-guid"
+					}
+				}`
+
+				server.AppendHandlers(
+					CombineHandlers(
+						VerifyRequest(http.MethodPut, "/v2/organizations/some-org-guid/managers"),
+						VerifyJSON(expectedRequest),
+						RespondWith(http.StatusCreated, response, http.Header{"X-Cf-Warnings": {"warning-1"}}),
+					))
+			})
+
+			JustBeforeEach(func() {
+				warnings, err = client.UpdateOrganizationManagerByUsername("some-org-guid", "some-user")
+			})
+
+			It("returns warnings", func() {
+				Expect(err).ToNot(HaveOccurred())
+				Expect(warnings).To(ConsistOf("warning-1"))
+			})
+		})
+	})
+
 	Describe("GetOrganizations", func() {
 		Context("when no errors are encountered", func() {
 			Context("when results are paginated", func() {
