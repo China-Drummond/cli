@@ -51,13 +51,14 @@ func (org *Organization) UnmarshalJSON(data []byte) error {
 }
 
 type createOrganizationRequestBody struct {
-	Name string `json:"name"`
+	Name                string `json:"name"`
+	QuotaDefinitionGUID string `json:"quota_definition_guid,omitempty"`
 }
 
-func (client *Client) CreateOrganization(orgName string) (Organization, Warnings, error) {
-
+func (client *Client) CreateOrganization(orgName string, quotaGUID string) (Organization, Warnings, error) {
 	requestBody := createOrganizationRequestBody{
-		Name: orgName,
+		Name:                orgName,
+		QuotaDefinitionGUID: quotaGUID,
 	}
 
 	bodyBytes, err := json.Marshal(requestBody)
@@ -69,11 +70,10 @@ func (client *Client) CreateOrganization(orgName string) (Organization, Warnings
 		RequestName: internal.PostOrganizationRequest,
 		Body:        bytes.NewReader(bodyBytes),
 	})
-	/*
-		if err != nil {
-			return Organization{}, nil, err
-		}
-	*/
+
+	if err != nil {
+		return Organization{}, nil, err
+	}
 
 	var org Organization
 	response := cloudcontroller.Response{

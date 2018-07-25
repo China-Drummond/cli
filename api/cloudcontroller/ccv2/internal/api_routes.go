@@ -32,6 +32,7 @@ const (
 	GetInfoRequest                                       = "GetInfo"
 	GetJobRequest                                        = "GetJob"
 	GetOrganizationPrivateDomainsRequest                 = "GetOrganizationPrivateDomains"
+	GetOrganizationQuotaDefinitionByNameRequest          = "GetOrganizationQuotaDefinitionByName"
 	GetOrganizationQuotaDefinitionRequest                = "GetOrganizationQuotaDefinition"
 	GetOrganizationRequest                               = "GetOrganization"
 	GetOrganizationsRequest                              = "GetOrganizations"
@@ -120,6 +121,7 @@ var APIRoutes = rata.Routes{
 	{Path: "/v2/private_domains", Method: http.MethodGet, Name: GetPrivateDomainsRequest},
 	{Path: "/v2/private_domains/:private_domain_guid", Method: http.MethodGet, Name: GetPrivateDomainRequest},
 	{Path: "/v2/quota_definitions/:organization_quota_guid", Method: http.MethodGet, Name: GetOrganizationQuotaDefinitionRequest},
+	{Path: "/v2/quota_definitions", Method: http.MethodGet, Name: GetOrganizationQuotaDefinitionByNameRequest},
 	{Path: "/v2/resource_match", Method: http.MethodPut, Name: PutResourceMatchRequest},
 	{Path: "/v2/route_mappings", Method: http.MethodGet, Name: GetRouteMappingsRequest},
 	{Path: "/v2/route_mappings/:route_mapping_guid", Method: http.MethodGet, Name: GetRouteMappingRequest},

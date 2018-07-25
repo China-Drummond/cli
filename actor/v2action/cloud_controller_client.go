@@ -12,7 +12,7 @@ import (
 type CloudControllerClient interface {
 	CreateApplication(app ccv2.Application) (ccv2.Application, ccv2.Warnings, error)
 	CreateBuildpack(buildpack ccv2.Buildpack) (ccv2.Buildpack, ccv2.Warnings, error)
-	CreateOrganization(orgName string) (ccv2.Organization, ccv2.Warnings, error)
+	CreateOrganization(orgName string, quotaGUID string) (ccv2.Organization, ccv2.Warnings, error)
 	CreateRoute(route ccv2.Route, generatePort bool) (ccv2.Route, ccv2.Warnings, error)
 	CreateServiceBinding(appGUID string, serviceBindingGUID string, bindingName string, acceptsIncomplete bool, parameters map[string]interface{}) (ccv2.ServiceBinding, ccv2.Warnings, error)
 	CreateUser(uaaUserID string) (ccv2.User, ccv2.Warnings, error)
@@ -34,6 +34,7 @@ type CloudControllerClient interface {
 	GetOrganization(guid string) (ccv2.Organization, ccv2.Warnings, error)
 	GetOrganizationPrivateDomains(orgGUID string, filters ...ccv2.Filter) ([]ccv2.Domain, ccv2.Warnings, error)
 	GetOrganizationQuota(guid string) (ccv2.OrganizationQuota, ccv2.Warnings, error)
+	GetOrganizationQuotaByName(name string) (ccv2.OrganizationQuota, ccv2.Warnings, error)
 	GetOrganizations(filters ...ccv2.Filter) ([]ccv2.Organization, ccv2.Warnings, error)
 	GetPrivateDomain(domainGUID string) (ccv2.Domain, ccv2.Warnings, error)
 	GetRouteApplications(routeGUID string, filters ...ccv2.Filter) ([]ccv2.Application, ccv2.Warnings, error)

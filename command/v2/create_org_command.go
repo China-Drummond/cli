@@ -12,7 +12,7 @@ import (
 //go:generate counterfeiter . CreateOrgActor
 
 type CreateOrgActor interface {
-	CreateOrganization(orgName string) (v2action.Organization, v2action.Warnings, error)
+	CreateOrganization(orgName string, quotaName string) (v2action.Organization, v2action.Warnings, error)
 	GrantOrgManagerByUsername(guid string, username string) (v2action.Warnings, error)
 }
 
@@ -69,7 +69,7 @@ func (cmd CreateOrgCommand) Execute(args []string) error {
 			"Username": user.Name,
 		})
 
-	org, warnings, err := cmd.Actor.CreateOrganization(orgName)
+	org, warnings, err := cmd.Actor.CreateOrganization(orgName, cmd.Quota)
 	cmd.UI.DisplayWarnings(warnings)
 	if err != nil {
 		return err

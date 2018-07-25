@@ -53,3 +53,26 @@ func (client *Client) GetOrganizationQuota(guid string) (OrganizationQuota, Warn
 	err = client.connection.Make(request, &response)
 	return orgQuota, response.Warnings, err
 }
+
+// GetOrganizationQuotaByName returns an Organization Quota associated with the
+// provided name.
+func (client *Client) GetOrganizationQuotaByName(name string) (OrganizationQuota, Warnings, error) {
+	request, err := client.newHTTPRequest(requestOptions{
+		RequestName: internal.GetOrganizationQuotaDefinitionByNameRequest,
+		URIParams: Params{
+			"q=name:": name,
+		},
+	})
+
+	if err != nil {
+		return OrganizationQuota{}, nil, err
+	}
+
+	var orgQuota OrganizationQuota
+	response := cloudcontroller.Response{
+		Result: &orgQuota,
+	}
+
+	err = client.connection.Make(request, &response)
+	return orgQuota, response.Warnings, err
+}

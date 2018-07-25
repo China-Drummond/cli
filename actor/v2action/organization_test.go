@@ -242,11 +242,19 @@ var _ = Describe("Org Actions", func() {
 		)
 
 		JustBeforeEach(func() {
-			org, warnings, err = actor.CreateOrganization("some-org")
+			org, warnings, err = actor.CreateOrganization("some-org", "quota-name")
 		})
 
 		Context("the organization is created successfully", func() {
 			BeforeEach(func() {
+				fakeCloudControllerClient.GetOrganizationQuotaByNameReturns(
+					ccv2.OrganizationQuota{
+						GUID: "some-quota-definition-guid",
+						Name: "quota-name",
+					},
+					ccv2.Warnings{"warning-1", "warning-2"},
+					nil)
+
 				fakeCloudControllerClient.CreateOrganizationReturns(
 					ccv2.Organization{
 						GUID:                "some-org-guid",
@@ -266,9 +274,14 @@ var _ = Describe("Org Actions", func() {
 
 				Expect(warnings).To(ConsistOf("warning-1", "warning-2"))
 
+				Expect(fakeCloudControllerClient.GetOrganizationQuotaByNameCallCount()).To(Equal(1))
+				quotaName := fakeCloudControllerClient.GetOrganizationQuotaByNameArgsForCall(0)
+				Expect(quotaName).To(Equal("quota-name"))
+
 				Expect(fakeCloudControllerClient.CreateOrganizationCallCount()).To(Equal(1))
-				orgName := fakeCloudControllerClient.CreateOrganizationArgsForCall(0)
+				orgName, quotaGUID := fakeCloudControllerClient.CreateOrganizationArgsForCall(0)
 				Expect(orgName).To(Equal("some-org"))
+				Expect(quotaGUID).To(Equal("some-quota-definition-guid"))
 			})
 		})
 	})

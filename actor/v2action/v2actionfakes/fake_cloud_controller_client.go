@@ -40,10 +40,11 @@ type FakeCloudControllerClient struct {
 		result2 ccv2.Warnings
 		result3 error
 	}
-	CreateOrganizationStub        func(orgName string) (ccv2.Organization, ccv2.Warnings, error)
+	CreateOrganizationStub        func(orgName string, quotaGUID string) (ccv2.Organization, ccv2.Warnings, error)
 	createOrganizationMutex       sync.RWMutex
 	createOrganizationArgsForCall []struct {
-		orgName string
+		orgName   string
+		quotaGUID string
 	}
 	createOrganizationReturns struct {
 		result1 ccv2.Organization
@@ -367,6 +368,21 @@ type FakeCloudControllerClient struct {
 		result3 error
 	}
 	getOrganizationQuotaReturnsOnCall map[int]struct {
+		result1 ccv2.OrganizationQuota
+		result2 ccv2.Warnings
+		result3 error
+	}
+	GetOrganizationQuotaByNameStub        func(name string) (ccv2.OrganizationQuota, ccv2.Warnings, error)
+	getOrganizationQuotaByNameMutex       sync.RWMutex
+	getOrganizationQuotaByNameArgsForCall []struct {
+		name string
+	}
+	getOrganizationQuotaByNameReturns struct {
+		result1 ccv2.OrganizationQuota
+		result2 ccv2.Warnings
+		result3 error
+	}
+	getOrganizationQuotaByNameReturnsOnCall map[int]struct {
 		result1 ccv2.OrganizationQuota
 		result2 ccv2.Warnings
 		result3 error
@@ -1182,16 +1198,17 @@ func (fake *FakeCloudControllerClient) CreateBuildpackReturnsOnCall(i int, resul
 	}{result1, result2, result3}
 }
 
-func (fake *FakeCloudControllerClient) CreateOrganization(orgName string) (ccv2.Organization, ccv2.Warnings, error) {
+func (fake *FakeCloudControllerClient) CreateOrganization(orgName string, quotaGUID string) (ccv2.Organization, ccv2.Warnings, error) {
 	fake.createOrganizationMutex.Lock()
 	ret, specificReturn := fake.createOrganizationReturnsOnCall[len(fake.createOrganizationArgsForCall)]
 	fake.createOrganizationArgsForCall = append(fake.createOrganizationArgsForCall, struct {
-		orgName string
-	}{orgName})
-	fake.recordInvocation("CreateOrganization", []interface{}{orgName})
+		orgName   string
+		quotaGUID string
+	}{orgName, quotaGUID})
+	fake.recordInvocation("CreateOrganization", []interface{}{orgName, quotaGUID})
 	fake.createOrganizationMutex.Unlock()
 	if fake.CreateOrganizationStub != nil {
-		return fake.CreateOrganizationStub(orgName)
+		return fake.CreateOrganizationStub(orgName, quotaGUID)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2, ret.result3
@@ -1205,10 +1222,10 @@ func (fake *FakeCloudControllerClient) CreateOrganizationCallCount() int {
 	return len(fake.createOrganizationArgsForCall)
 }
 
-func (fake *FakeCloudControllerClient) CreateOrganizationArgsForCall(i int) string {
+func (fake *FakeCloudControllerClient) CreateOrganizationArgsForCall(i int) (string, string) {
 	fake.createOrganizationMutex.RLock()
 	defer fake.createOrganizationMutex.RUnlock()
-	return fake.createOrganizationArgsForCall[i].orgName
+	return fake.createOrganizationArgsForCall[i].orgName, fake.createOrganizationArgsForCall[i].quotaGUID
 }
 
 func (fake *FakeCloudControllerClient) CreateOrganizationReturns(result1 ccv2.Organization, result2 ccv2.Warnings, result3 error) {
@@ -2355,6 +2372,60 @@ func (fake *FakeCloudControllerClient) GetOrganizationQuotaReturnsOnCall(i int, 
 		})
 	}
 	fake.getOrganizationQuotaReturnsOnCall[i] = struct {
+		result1 ccv2.OrganizationQuota
+		result2 ccv2.Warnings
+		result3 error
+	}{result1, result2, result3}
+}
+
+func (fake *FakeCloudControllerClient) GetOrganizationQuotaByName(name string) (ccv2.OrganizationQuota, ccv2.Warnings, error) {
+	fake.getOrganizationQuotaByNameMutex.Lock()
+	ret, specificReturn := fake.getOrganizationQuotaByNameReturnsOnCall[len(fake.getOrganizationQuotaByNameArgsForCall)]
+	fake.getOrganizationQuotaByNameArgsForCall = append(fake.getOrganizationQuotaByNameArgsForCall, struct {
+		name string
+	}{name})
+	fake.recordInvocation("GetOrganizationQuotaByName", []interface{}{name})
+	fake.getOrganizationQuotaByNameMutex.Unlock()
+	if fake.GetOrganizationQuotaByNameStub != nil {
+		return fake.GetOrganizationQuotaByNameStub(name)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2, ret.result3
+	}
+	return fake.getOrganizationQuotaByNameReturns.result1, fake.getOrganizationQuotaByNameReturns.result2, fake.getOrganizationQuotaByNameReturns.result3
+}
+
+func (fake *FakeCloudControllerClient) GetOrganizationQuotaByNameCallCount() int {
+	fake.getOrganizationQuotaByNameMutex.RLock()
+	defer fake.getOrganizationQuotaByNameMutex.RUnlock()
+	return len(fake.getOrganizationQuotaByNameArgsForCall)
+}
+
+func (fake *FakeCloudControllerClient) GetOrganizationQuotaByNameArgsForCall(i int) string {
+	fake.getOrganizationQuotaByNameMutex.RLock()
+	defer fake.getOrganizationQuotaByNameMutex.RUnlock()
+	return fake.getOrganizationQuotaByNameArgsForCall[i].name
+}
+
+func (fake *FakeCloudControllerClient) GetOrganizationQuotaByNameReturns(result1 ccv2.OrganizationQuota, result2 ccv2.Warnings, result3 error) {
+	fake.GetOrganizationQuotaByNameStub = nil
+	fake.getOrganizationQuotaByNameReturns = struct {
+		result1 ccv2.OrganizationQuota
+		result2 ccv2.Warnings
+		result3 error
+	}{result1, result2, result3}
+}
+
+func (fake *FakeCloudControllerClient) GetOrganizationQuotaByNameReturnsOnCall(i int, result1 ccv2.OrganizationQuota, result2 ccv2.Warnings, result3 error) {
+	fake.GetOrganizationQuotaByNameStub = nil
+	if fake.getOrganizationQuotaByNameReturnsOnCall == nil {
+		fake.getOrganizationQuotaByNameReturnsOnCall = make(map[int]struct {
+			result1 ccv2.OrganizationQuota
+			result2 ccv2.Warnings
+			result3 error
+		})
+	}
+	fake.getOrganizationQuotaByNameReturnsOnCall[i] = struct {
 		result1 ccv2.OrganizationQuota
 		result2 ccv2.Warnings
 		result3 error
@@ -4970,6 +5041,8 @@ func (fake *FakeCloudControllerClient) Invocations() map[string][][]interface{} 
 	defer fake.getOrganizationPrivateDomainsMutex.RUnlock()
 	fake.getOrganizationQuotaMutex.RLock()
 	defer fake.getOrganizationQuotaMutex.RUnlock()
+	fake.getOrganizationQuotaByNameMutex.RLock()
+	defer fake.getOrganizationQuotaByNameMutex.RUnlock()
 	fake.getOrganizationsMutex.RLock()
 	defer fake.getOrganizationsMutex.RUnlock()
 	fake.getPrivateDomainMutex.RLock()
