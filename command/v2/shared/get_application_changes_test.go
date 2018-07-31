@@ -102,11 +102,11 @@ var _ = Describe("GetApplicationChanges", func() {
 		})
 	})
 
-	Describe("buildpack", func() {
+	FDescribe("buildpacks", func() {
 		Context("new app with no specified buildpack AND no specified buildpacks(plural)", func() {
 			It("does not provide a buildpack change", func() {
 				for i, change := range changes {
-					Expect(change.Header).ToNot(Equal("buildpack:"), fmt.Sprintf("entry %d should not be a buildpack", i))
+					Expect(change.Header).ToNot(Equal("buildpacks:"), fmt.Sprintf("entry %d should not be a buildpack", i))
 				}
 			})
 		})
@@ -125,7 +125,7 @@ var _ = Describe("GetApplicationChanges", func() {
 				changes = GetApplicationChanges(appConfig)
 
 				Expect(changes[2]).To(Equal(ui.Change{
-					Header:       "buildpack:",
+					Header:       "buildpacks:",
 					CurrentValue: currentValue,
 					NewValue:     newValue,
 				}))

@@ -41,14 +41,24 @@ func GetApplicationChanges(appConfig pushaction.ApplicationConfig) []ui.Change {
 	}
 
 	// Existing buildpack and existing detected buildpack are mutually exclusive
-	oldBuildpack := appConfig.CurrentApplication.CalculatedBuildpack()
-	newBuildpack := appConfig.DesiredApplication.CalculatedBuildpack()
-	if oldBuildpack != "" || newBuildpack != "" {
+	// oldBuildpack := appConfig.CurrentApplication.CalculatedBuildpack()
+	// newBuildpack := appConfig.DesiredApplication.CalculatedBuildpack()
+	// if oldBuildpack != "" || newBuildpack != "" {
+	// 	changes = append(changes,
+	// 		ui.Change{
+	// 			Header:       "buildpacks:",
+	// 			CurrentValue: oldBuildpack,
+	// 			NewValue:     newBuildpack,
+	// 		})
+	// }
+	oldBuildpacks := appConfig.CurrentApplication.CalculatedBuildpacks()
+	newBuildpacks := appConfig.DesiredApplication.CalculatedBuildpacks()
+	if len(oldBuildpacks) > 0 || len(newBuildpacks) > 0 {
 		changes = append(changes,
 			ui.Change{
-				Header:       "buildpack:",
-				CurrentValue: oldBuildpack,
-				NewValue:     newBuildpack,
+				Header:       "buildpacks:",
+				CurrentValue: oldBuildpacks,
+				NewValue:     newBuildpacks,
 			})
 	}
 

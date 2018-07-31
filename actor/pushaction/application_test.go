@@ -12,6 +12,7 @@ import (
 	"code.cloudfoundry.org/cli/types"
 
 	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gstruct"
 )
@@ -27,6 +28,36 @@ var _ = Describe("Applications", func() {
 		fakeV2Actor = new(pushactionfakes.FakeV2Actor)
 		fakeV3Actor = new(pushactionfakes.FakeV3Actor)
 		actor = NewActor(fakeV2Actor, fakeV3Actor, nil)
+	})
+
+	Describe("Application", func() {
+		DescribeTable("CalculatedBuildpacks",
+			func(v2Buildpack string, v3Buildpacks []string, expected []string) {
+				var buildpack types.FilteredString
+				if len(v2Buildpack) > 0 {
+					buildpack = types.FilteredString{
+						Value: v2Buildpack,
+						IsSet: true,
+					}
+				}
+				Expect(Application{
+					Application: v2action.Application{
+						Buildpack: buildpack,
+					},
+					Buildpacks: v3Buildpacks,
+				}.CalculatedBuildpacks()).To(ConsistOf(expected))
+			},
+
+			Entry("returns v3 buildpacks when set",
+				"some-buildpack", []string{"some-buildpack", "some-other-buildpack"},
+				[]string{"some-buildpack", "some-other-buildpack"}),
+
+			Entry("returns v2 buildpacks when v3 buildpacks is empty",
+				"some-buildpack", nil,
+				[]string{"some-buildpack"}),
+
+			Entry("returns empty when nothing is set", "", nil, nil),
+		)
 	})
 
 	Describe("UpdateApplication", func() {

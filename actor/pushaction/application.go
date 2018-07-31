@@ -17,6 +17,15 @@ type Application struct {
 	Stack      v2action.Stack
 }
 
+func (app Application) CalculatedBuildpacks() []string {
+	if len(app.Buildpacks) > 0 {
+		return app.Buildpacks
+	} else if buildpack := app.CalculatedBuildpack(); len(buildpack) > 0 {
+		return []string{buildpack}
+	}
+	return nil
+}
+
 func (app Application) String() string {
 	return fmt.Sprintf("%s, Stack Name: '%s', Buildpacks: %s", app.Application, app.Stack.Name, app.Buildpacks)
 }
