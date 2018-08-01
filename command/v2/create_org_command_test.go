@@ -81,22 +81,28 @@ var _ = Describe("CreateOrgCommand", func() {
 				}, nil)
 			})
 
-			Context("when creating the org succeeds", func() {
-				Context("when the -q is passed", func() {
-					BeforeEach(func() {
-						cmd.Quota = "some-quota-name"
-					})
+			Context("when the -q is passed", func() {
+				BeforeEach(func() {
+					cmd.Quota = "some-quota-name"
+				})
 
-					Context("when the quota doesn't exist", func() {
+				Context("when the quota doesn't exist", func() {
+					BeforeEach(func() {
 						fakeActor.CreateOrganizationReturns(
-							v2action.Organization{GUID: "fake-org-id"},
+							v2action.Organization{},
 							v2action.Warnings{"warn-1", "warn-2"},
-							nil,
+							errors.New("boom"),
 						)
 					})
 
+					It("prints warnings and returns an error", func() {
+						Expect(executeErr).To(MatchError("boom"))
+						Expect(testUI.Err).To(Say("warn-1\nwarn-2\n"))
+					})
 				})
+			})
 
+			Context("when creating the org succeeds", func() {
 				BeforeEach(func() {
 					fakeActor.CreateOrganizationReturns(
 						v2action.Organization{GUID: "fake-org-id"},

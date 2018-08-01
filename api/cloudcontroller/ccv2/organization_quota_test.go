@@ -74,7 +74,17 @@ var _ = Describe("OrganizationQuota", func() {
 
 	})
 
-	FDescribe("GetOrganizationQuotaByName", func() {
+	Describe("GetOrganizationQuotaByName", func() {
+		var (
+			quota      OrganizationQuota
+			warnings   Warnings
+			executeErr error
+		)
+
+		JustBeforeEach(func() {
+			quota, warnings, executeErr = client.GetOrganizationQuotaByName("some-quota-name")
+		})
+
 		Context("when quota exists", func() {
 			BeforeEach(func() {
 				response := `{
@@ -82,24 +92,23 @@ var _ = Describe("OrganizationQuota", func() {
 					"guid": "some-org-quota-guid"
 				},
 				"entity": {
-					"name": "some-org-quota-name"
+					"name": "some-quota-name"
 				}
 			}`
 				server.AppendHandlers(
 					CombineHandlers(
-						VerifyRequest(http.MethodGet, "/v2/quota_definitions?q=name:some-org-quota-name"),
+						VerifyRequest(http.MethodGet, "/v2/quota_definitions", "q=name:some-quota-name"),
 						RespondWith(http.StatusOK, response, http.Header{"X-Cf-Warnings": {"warning-1"}}),
 					),
 				)
 			})
 
 			It("returns the organization quota", func() {
-				orgQuota, warnings, err := client.GetOrganizationQuotaByName("some-org-quota-name")
-				Expect(err).NotTo(HaveOccurred())
+				Expect(executeErr).NotTo(HaveOccurred())
 				Expect(warnings).To(Equal(Warnings{"warning-1"}))
-				Expect(orgQuota).To(Equal(OrganizationQuota{
+				Expect(quota).To(Equal(OrganizationQuota{
 					GUID: "some-org-quota-guid",
-					Name: "some-org-quota-name",
+					Name: "some-quota-name",
 				}))
 
 			})
@@ -108,24 +117,22 @@ var _ = Describe("OrganizationQuota", func() {
 		Context("when quota doesn't exist", func() {
 			BeforeEach(func() {
 				response := `{
-				"metadata": {
-					"guid": "some-org-quota-guid"
-				},
-				"entity": {
-					"name": "some-bogus-name"
-				}
-			}`
+					"code": 10001,
+					"description": "Some Error",
+					"error_code": "CF-SomeError"
+				}`
 				server.AppendHandlers(
 					CombineHandlers(
-						VerifyRequest(http.MethodGet, "/v2/quota_definitions?q=name:some-org-quota-name"),
+						VerifyRequest(http.MethodGet, "/v2/quota_definitions", "q=name:some-quota-name"),
 						RespondWith(http.StatusNotFound, response, http.Header{"X-Cf-Warnings": {"warning-1"}}),
 					),
 				)
 			})
 
 			It("returns warnings and errors", func() {
-				_, warnings, err := client.GetOrganizationQuotaByName("some-bogus-name")
-				Expect(err).To(MatchError("some-error"))
+				Expect(executeErr).To(MatchError(ccerror.ResourceNotFoundError{
+					Message: "Some Error",
+				}))
 				Expect(warnings).To(Equal(Warnings{"warning-1"}))
 			})
 		})

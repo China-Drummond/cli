@@ -61,7 +61,7 @@ var _ = FDescribe("create-org", func() {
 				Eventually(session).Should(Exit(0))
 			})
 
-			It("fails with an insufficient scope error", func() {
+			XIt("fails with an insufficient scope error", func() {
 				orgName := helpers.NewOrgName()
 				session := helpers.CF("create-org", orgName)
 				Eventually(session.Out).Should(Say("Error creating organization %s\\.", orgName))
@@ -102,7 +102,7 @@ var _ = FDescribe("create-org", func() {
 					Eventually(session).Should(Exit(0))
 				})
 
-				It("creates the org with the provided quota", func() {
+				XIt("creates the org with the provided quota", func() {
 					orgName := helpers.NewOrgName()
 					session := helpers.CF("create-org", orgName, "-q", quotaName)
 					Eventually(session).Should(Exit(0))
@@ -114,7 +114,7 @@ var _ = FDescribe("create-org", func() {
 			})
 
 			Context("when a nonexistent quota is provided", func() {
-				It("fails with an error and does not create the org", func() {
+				XIt("fails with an error and does not create the org", func() {
 					orgName := helpers.NewOrgName()
 					session := helpers.CF("create-org", orgName, "-q", "no-such-quota")
 					Eventually(session.Err).Should(Say("FAILED\\n"))
@@ -135,7 +135,7 @@ var _ = FDescribe("create-org", func() {
 				Eventually(session).Should(Exit(0))
 			})
 
-			It("warns the user that the org already exists", func() {
+			XIt("warns the user that the org already exists", func() {
 				session := helpers.CF("create-org", orgName)
 				Eventually(session.Out).Should(Say("Creating org %s as %s\\.\\.\\.", orgName, user))
 				Eventually(session.Out).Should(Say("OK\\n"))

@@ -1,6 +1,9 @@
 package ccv2
 
 import (
+	"fmt"
+	"net/url"
+
 	"code.cloudfoundry.org/cli/api/cloudcontroller"
 	"code.cloudfoundry.org/cli/api/cloudcontroller/ccv2/internal"
 )
@@ -58,12 +61,11 @@ func (client *Client) GetOrganizationQuota(guid string) (OrganizationQuota, Warn
 // provided name.
 func (client *Client) GetOrganizationQuotaByName(name string) (OrganizationQuota, Warnings, error) {
 	request, err := client.newHTTPRequest(requestOptions{
-		RequestName: internal.GetOrganizationQuotaDefinitionByNameRequest,
-		URIParams: Params{
-			"q=name:": name,
+		RequestName: internal.GetOrganizationQuotaDefinitionsRequest,
+		Query: url.Values{
+			"q": {fmt.Sprintf("name:%s", name)},
 		},
 	})
-
 	if err != nil {
 		return OrganizationQuota{}, nil, err
 	}
